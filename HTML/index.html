@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>aldi tulis tangan- Generator Tulisan Tangan</title>
+    <title>TulisTangan.id - Generator Tulisan Tangan</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Handwriting styles & UI -->
@@ -31,6 +31,20 @@
         #splash-screen {
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
+
+        /* Marquee Text Animation */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
@@ -52,6 +66,13 @@
         </div>
     </div>
 
+    <!-- RUNNING TEXT BANNER -->
+    <div class="bg-indigo-950/80 border-b border-indigo-800/50 py-1.5 overflow-hidden text-xs text-indigo-200 font-medium z-40 relative">
+        <div class="animate-marquee tracking-wide">
+            ✨ Selamat Datang di TulisTangan.id — Konversi Teks Digital Menjadi Tulisan Tangan Alami secara Instan & Siap Cetak! ✨
+        </div>
+    </div>
+
     <!-- MAIN APP HEADER -->
     <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -65,6 +86,12 @@
                 </div>
             </div>
 
+            <!-- INDIKATOR PENGGUNA ONLINE REAL-TIME -->
+            <div class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/30 px-3 py-1.5 rounded-full shadow-inner">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="online-count" class="text-xs font-semibold text-emerald-400">1 Online</span>
+            </div>
+
             <div class="flex items-center space-x-2 sm:space-x-3">
                 <button id="btn-export-png" class="flex items-center space-x-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-sm font-medium transition shadow-sm border border-slate-700">
                     <i data-lucide="image" class="w-4 h-4"></i>
@@ -72,7 +99,7 @@
                 </button>
                 <button id="btn-export-pdf" class="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-indigo-600/20">
                     <i data-lucide="download" class="w-4 h-4"></i>
-                    <span>Ekspor PDF</span>
+                    <span>Ekspor PDF Multi-Halaman</span>
                 </button>
             </div>
         </div>
@@ -96,14 +123,14 @@
                     </div>
                     <textarea 
                         id="text-input" 
-                        rows="7" 
+                        rows="8" 
                         class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y transition"
                         placeholder="Ketik atau tempel teks Anda di sini..."></textarea>
                     
                     <div class="flex justify-between items-center mt-3">
                         <button id="btn-sample-text" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                            Gunakan Contoh Teks
+                            Gunakan Contoh Teks Panjang
                         </button>
                         <button id="btn-clear-text" class="text-xs text-slate-400 hover:text-red-400 font-medium transition">
                             Hapus Semua
@@ -186,7 +213,7 @@
                         <input type="range" id="input-randomness" min="0" max="3" step="1" value="1" class="w-full accent-indigo-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Strikethrough (Coret/Sret) & Red Line Toggles -->
+                    <!-- Strikethrough & Red Line Toggles -->
                     <div class="space-y-3 pt-2 border-t border-slate-800/80">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
@@ -211,13 +238,13 @@
                 </div>
             </div>
 
-            <!-- RIGHT PANEL: Live Paper Canvas Preview -->
+            <!-- RIGHT PANEL: Live Paper Canvas Multi-Page Container -->
             <div class="lg:col-span-7 flex flex-col items-center justify-start min-h-[600px] w-full">
                 
                 <div class="w-full flex items-center justify-between mb-3 px-1">
                     <div class="flex items-center space-x-2 text-xs text-slate-400">
                         <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Pratinjau Kanvas A4 (Garis & Tinta Terbawa Saat Unduh)</span>
+                        <span id="page-count-info">Pratinjau Multi-Halaman A4</span>
                     </div>
                     <button id="btn-re-randomize" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 bg-slate-800 px-2.5 py-1 rounded-md transition border border-slate-700">
                         <i data-lucide="rotate-cw" class="w-3 h-3"></i>
@@ -225,9 +252,9 @@
                     </button>
                 </div>
 
-                <!-- Canvas Wrapper -->
-                <div class="w-full overflow-x-auto flex justify-center p-2 sm:p-4 bg-slate-950/50 border border-slate-800/80 rounded-2xl">
-                    <canvas id="handwriting-canvas" width="794" height="1123" class="canvas-wrapper rounded-sm bg-white"></canvas>
+                <!-- Container untuk Menampung Semua Kanvas Halaman -->
+                <div id="canvas-container" class="w-full flex flex-col items-center gap-6 overflow-x-auto p-2 sm:p-4 bg-slate-950/50 border border-slate-800/80 rounded-2xl">
+                    <!-- Kanvas-kanvas akan digenerate otomatis di sini -->
                 </div>
 
             </div>
@@ -236,10 +263,16 @@
     </main>
 
     <script>
-        // Default Sample Text
-        const SAMPLE_TEXT = `aldi kocakk`;
+        const SAMPLE_TEXT = `Pengembangan sistem informasi yang efektif membutuhkan pemahaman mendalam tentang kebutuhan pengguna serta tata kelola data yang terintegrasi. Setiap alur transaksi yang dicatat tidak hanya berfungsi sebagai rekam jejak keuangan, tetapi juga menjadi dasar pengambilan keputusan strategis yang krusial bagi keberlanjutan suatu organisasi.
 
-        // Available Handwriting Fonts
+Dalam praktiknya, implementasi sistem sering kali menghadapi berbagai tantangan, mulai dari adaptasi teknologi hingga penyelarasan prosedur operasional standar. Oleh karena itu, kolaborasi yang erat antara tim pengembang dan pengguna akhir menjadi kunci utama dalam memastikan bahwa sistem yang dibangun dapat berjalan dengan lancar dan memberikan nilai tambah secara nyata.
+
+Selain aspek teknis, transparansi dan keamanan data juga merupakan pilar utama yang tidak boleh diabaikan. Dengan menerapkan mekanisme pengawasan yang ketat serta audit secara berkala, organisasi dapat meminimalkan risiko potensi kebocoran data dan menjaga integritas informasi yang dikelola.
+
+Di masa depan, integrasi teknologi kecerdasan buatan akan semakin mempermudah proses analisis data dan otomatisasi tugas-tugas rutin. Hal ini memungkinkan para profesional untuk lebih fokus pada perencanaan strategis dan inovasi layanan yang lebih responsif terhadap kebutuhan masyarakat.
+
+Lakukan hal kecil setiap hari dengan konsisten. Hasil besar tidak pernah datang dari langkah yang terburu-buru. Tetap semangat dalam belajar dan berkarya!`;
+
         const FONTS = [
             { id: 'Patrick Hand', name: 'Patrick (Cetak Rapi)', family: "'Patrick Hand', cursive" },
             { id: 'Gaegu', name: 'Gaegu (Cetak Bersih)', family: "Gaegu, cursive" },
@@ -249,7 +282,6 @@
             { id: 'Kalam', name: 'Kalam (Rapi)', family: "Kalam, cursive" }
         ];
 
-        // Available Ink Colors
         const INK_COLORS = [
             { id: 'black', name: 'Tinta Hitam', hex: '#1a1a1a' },
             { id: 'blue', name: 'Tinta Biru', hex: '#1d3557' },
@@ -257,7 +289,6 @@
             { id: 'red', name: 'Tinta Merah', hex: '#991b1b' }
         ];
 
-        // Available Paper Background Styles
         const PAPER_STYLES = [
             { id: 'lined', name: 'Buku Bergaris' },
             { id: 'white', name: 'HVS Polos' },
@@ -265,7 +296,6 @@
             { id: 'vintage', name: 'Kertas Vintage' }
         ];
 
-        // State Management
         let state = {
             text: SAMPLE_TEXT,
             font: FONTS[0].id,
@@ -281,17 +311,14 @@
             seed: Math.random()
         };
 
-        // DOM Elements
         const textInput = document.getElementById('text-input');
         const charCount = document.getElementById('char-count');
         const fontOptionsContainer = document.getElementById('font-options');
         const inkOptionsContainer = document.getElementById('ink-options');
         const paperOptionsContainer = document.getElementById('paper-options');
-        const canvas = document.getElementById('handwriting-canvas');
-        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvas-container');
         const splashScreen = document.getElementById('splash-screen');
 
-        // Input Controls
         const inputFontSize = document.getElementById('input-font-size');
         const inputLineHeight = document.getElementById('input-line-height');
         const inputMarginLeft = document.getElementById('input-margin-left');
@@ -300,21 +327,35 @@
         const toggleRedLine = document.getElementById('toggle-red-line');
         const toggleStrikethrough = document.getElementById('toggle-strikethrough');
 
-        // Value Display Labels
         const valFontSize = document.getElementById('val-font-size');
         const valLineHeight = document.getElementById('val-line-height');
         const valMarginLeft = document.getElementById('val-margin-left');
         const valMarginTop = document.getElementById('val-margin-top');
         const valRandomness = document.getElementById('val-randomness');
 
-        // Seeded Pseudo-Random Generator
+        // Fungsi Simulasi Pengguna Online secara Real-time
+        function initRealtimeOnlineUsers() {
+            let onlineUsers = Math.floor(Math.random() * 4) + 3; // Angka awal acak (3 - 6)
+            const onlineElem = document.getElementById('online-count');
+
+            if (onlineElem) {
+                onlineElem.textContent = `${onlineUsers} Online`;
+
+                // Update fluktuasi jumlah pengguna setiap 5 - 10 detik
+                setInterval(() => {
+                    const delta = Math.floor(Math.random() * 3) - 1; // -1, 0, atau +1
+                    onlineUsers = Math.max(1, onlineUsers + delta);
+                    onlineElem.textContent = `${onlineUsers} Online`;
+                }, Math.floor(Math.random() * 5000) + 5000);
+            }
+        }
+
         function pseudoRandom(s) {
             const x = Math.sin(s++) * 10000;
             return x - Math.floor(x);
         }
 
-        // Render Canvas Background Lines directly into Canvas (Garis Buku Warna Hitam)
-        function drawCanvasBackground() {
+        function drawCanvasBackground(ctx, canvas) {
             const width = canvas.width;
             const height = canvas.height;
 
@@ -337,11 +378,9 @@
                 }
             }
 
-            // Horizontal Lines (Hitam untuk Buku Bergaris)
             if (state.paper === 'lined') {
                 ctx.strokeStyle = '#2b2b2b';
                 ctx.lineWidth = 1;
-                
                 let y = state.marginTop;
                 while (y < height) {
                     ctx.beginPath();
@@ -352,7 +391,6 @@
                 }
             }
 
-            // Grid Pattern
             if (state.paper === 'grid') {
                 ctx.strokeStyle = '#2b2b2b';
                 ctx.lineWidth = 0.8;
@@ -372,7 +410,6 @@
                 }
             }
 
-            // Vertical Red Margin Line
             if (state.paper === 'lined' && state.showRedLine) {
                 const redX = Math.max(state.marginLeft - 20, 20);
                 ctx.strokeStyle = '#f87171';
@@ -384,87 +421,136 @@
             }
         }
 
-        // Render Handwritten Text onto Canvas with jitter & optional strikethrough (sret)
-        function drawCanvasText() {
+        function getWrappedLines(ctx) {
             const selectedFont = FONTS.find(f => f.id === state.font) || FONTS[0];
             ctx.font = `${state.fontSize}px ${selectedFont.family}`;
-            ctx.fillStyle = state.ink;
-            ctx.textBaseline = 'alphabetic';
 
-            const lines = textInput.value.split('\n');
-            let currentY = state.marginTop - (state.fontSize * 0.15);
-            let localSeed = state.seed;
+            const rawLines = textInput.value.split('\n');
+            const allWrappedLines = [];
 
-            lines.forEach((line) => {
+            rawLines.forEach((line) => {
                 if (line.length === 0) {
-                    currentY += state.lineHeight;
+                    allWrappedLines.push('');
                     return;
                 }
 
-                let currentX = state.marginLeft;
-                let lineStartX = currentX;
-                let lineWidth = 0;
+                const words = line.split(' ');
+                let currentLine = '';
 
-                // Pre-calculate line width for strikethrough
-                for (let i = 0; i < line.length; i++) {
-                    lineWidth += ctx.measureText(line[i]).width;
-                }
+                words.forEach((word) => {
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    const testWidth = ctx.measureText(testLine).width;
 
-                for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    const charWidth = ctx.measureText(char).width;
-
-                    if (currentX + charWidth > canvas.width - 30) {
-                        currentX = state.marginLeft;
-                        currentY += state.lineHeight;
+                    if (testWidth > (794 - state.marginLeft - 40)) {
+                        if (currentLine) allWrappedLines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
                     }
+                });
 
-                    ctx.save();
-
-                    let rot = 0;
-                    let offsetY = 0;
-                    let offsetX = 0;
-
-                    if (state.randomness > 0) {
-                        const factor = state.randomness * 0.7;
-                        rot = (pseudoRandom(localSeed++) - 0.5) * (0.05 * factor);
-                        offsetY = (pseudoRandom(localSeed++) - 0.5) * (2.0 * factor);
-                        offsetX = (pseudoRandom(localSeed++) - 0.5) * (1.2 * factor);
-                    }
-
-                    ctx.translate(currentX + offsetX, currentY + offsetY);
-                    ctx.rotate(rot);
-
-                    ctx.fillText(char, 0, 0);
-
-                    ctx.restore();
-
-                    currentX += charWidth + offsetX;
+                if (currentLine) {
+                    allWrappedLines.push(currentLine);
                 }
-
-                // Draw Strikethrough (Sret) if enabled
-                if (state.strikethrough) {
-                    ctx.save();
-                    ctx.strokeStyle = state.ink;
-                    ctx.lineWidth = 1.8;
-                    const strikeY = currentY - (state.fontSize * 0.35);
-                    const angleOffset = (pseudoRandom(localSeed++) - 0.5) * 4;
-
-                    ctx.beginPath();
-                    ctx.moveTo(lineStartX - 5, strikeY);
-                    ctx.lineTo(currentX + 5, strikeY + angleOffset);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-
-                currentY += state.lineHeight;
             });
+
+            return allWrappedLines;
         }
 
         function renderFullCanvas() {
             document.fonts.ready.then(() => {
-                drawCanvasBackground();
-                drawCanvasText();
+                canvasContainer.innerHTML = '';
+
+                const dummyCanvas = document.createElement('canvas');
+                dummyCanvas.width = 794;
+                dummyCanvas.height = 1123;
+                const dummyCtx = dummyCanvas.getContext('2d');
+
+                const lines = getWrappedLines(dummyCtx);
+
+                const availableHeight = 1123 - state.marginTop - 40;
+                const linesPerPage = Math.max(1, Math.floor(availableHeight / state.lineHeight));
+                
+                const totalPages = Math.max(1, Math.ceil(lines.length / linesPerPage));
+                document.getElementById('page-count-info').textContent = `Total: ${totalPages} Halaman A4`;
+
+                let localSeed = state.seed;
+
+                for (let page = 0; page < totalPages; page++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 794;
+                    canvas.height = 1123;
+                    canvas.className = 'canvas-wrapper rounded-sm bg-white mb-4';
+                    canvas.id = `canvas-page-${page + 1}`;
+
+                    const ctx = canvas.getContext('2d');
+                    drawCanvasBackground(ctx, canvas);
+
+                    const selectedFont = FONTS.find(f => f.id === state.font) || FONTS[0];
+                    ctx.font = `${state.fontSize}px ${selectedFont.family}`;
+                    ctx.fillStyle = state.ink;
+                    ctx.textBaseline = 'alphabetic';
+
+                    const pageLines = lines.slice(page * linesPerPage, (page + 1) * linesPerPage);
+                    let currentY = state.marginTop - (state.fontSize * 0.15);
+
+                    pageLines.forEach((line) => {
+                        if (line.length === 0) {
+                            currentY += state.lineHeight;
+                            return;
+                        }
+
+                        let currentX = state.marginLeft;
+                        let lineStartX = currentX;
+
+                        for (let i = 0; i < line.length; i++) {
+                            const char = line[i];
+                            const charWidth = ctx.measureText(char).width;
+
+                            ctx.save();
+
+                            let rot = 0;
+                            let offsetY = 0;
+                            let offsetX = 0;
+
+                            if (state.randomness > 0) {
+                                const factor = state.randomness * 0.7;
+                                rot = (pseudoRandom(localSeed++) - 0.5) * (0.05 * factor);
+                                offsetY = (pseudoRandom(localSeed++) - 0.5) * (2.0 * factor);
+                                offsetX = (pseudoRandom(localSeed++) - 0.5) * (1.2 * factor);
+                            }
+
+                            ctx.translate(currentX + offsetX, currentY + offsetY);
+                            ctx.rotate(rot);
+                            ctx.fillText(char, 0, 0);
+                            ctx.restore();
+
+                            currentX += charWidth + offsetX;
+                        }
+
+                        if (state.strikethrough) {
+                            ctx.save();
+                            ctx.strokeStyle = state.ink;
+                            ctx.lineWidth = 1.8;
+                            const strikeY = currentY - (state.fontSize * 0.35);
+                            const angleOffset = (pseudoRandom(localSeed++) - 0.5) * 4;
+
+                            ctx.beginPath();
+                            ctx.moveTo(lineStartX - 5, strikeY);
+                            ctx.lineTo(currentX + 5, strikeY + angleOffset);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+
+                        currentY += state.lineHeight;
+                    });
+
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '12px Inter, sans-serif';
+                    ctx.fillText(`Halaman ${page + 1} dari ${totalPages}`, 794 - 120, 1123 - 20);
+
+                    canvasContainer.appendChild(canvas);
+                }
             });
         }
 
@@ -499,7 +585,6 @@
         }
 
         function setupEventListeners() {
-            // Splash Button Start
             document.getElementById('btn-start').addEventListener('click', () => {
                 splashScreen.style.opacity = '0';
                 splashScreen.style.visibility = 'hidden';
@@ -597,16 +682,19 @@
             });
 
             document.getElementById('btn-export-png').addEventListener('click', () => {
-                renderFullCanvas();
-                const link = document.createElement('a');
-                link.download = `tulisan-tangan-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                const canvases = canvasContainer.querySelectorAll('canvas');
+                canvases.forEach((c, index) => {
+                    const link = document.createElement('a');
+                    link.download = `tulisan-tangan-halaman-${index + 1}-${Date.now()}.png`;
+                    link.href = c.toDataURL('image/png');
+                    link.click();
+                });
             });
 
             document.getElementById('btn-export-pdf').addEventListener('click', () => {
-                renderFullCanvas();
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const canvases = canvasContainer.querySelectorAll('canvas');
+                if (canvases.length === 0) return;
+
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({
                     orientation: 'portrait',
@@ -614,10 +702,18 @@
                     format: 'a4'
                 });
 
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                canvases.forEach((c, index) => {
+                    const imgData = c.toDataURL('image/jpeg', 0.95);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (c.height * pdfWidth) / c.width;
 
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    if (index > 0) {
+                        pdf.addPage();
+                    }
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                });
+
                 pdf.save(`catatan-tulisan-tangan-${Date.now()}.pdf`);
             });
         }
@@ -625,6 +721,7 @@
         window.onload = () => {
             initControls();
             setupEventListeners();
+            initRealtimeOnlineUsers();
             document.fonts.ready.then(() => {
                 renderFullCanvas();
             });
