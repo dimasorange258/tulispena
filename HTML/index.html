@@ -155,7 +155,7 @@
                         </div>
                     </div>
 
-                    <!-- Margins & Letter Spacing Controls -->
+                    <!-- Margins Controls -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <div class="flex justify-between text-xs mb-1">
@@ -186,13 +186,26 @@
                         <input type="range" id="input-randomness" min="0" max="3" step="1" value="1" class="w-full accent-indigo-500 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer">
                     </div>
 
-                    <!-- Show Red Line Margin Toggle -->
-                    <div class="flex items-center justify-between pt-2">
-                        <span class="text-xs font-medium text-slate-300">Garis Pinggir Merah (Buku Tulis)</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="toggle-red-line" class="sr-only peer" checked>
-                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-                        </label>
+                    <!-- Strikethrough (Coret/Sret) & Red Line Toggles -->
+                    <div class="space-y-3 pt-2 border-t border-slate-800/80">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                                <i data-lucide="strikethrough" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                Efek Coret / Sret (Strikethrough)
+                            </span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-strikethrough" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-300">Garis Pinggir Merah (Buku Tulis)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-red-line" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
                     </div>
 
                 </div>
@@ -264,6 +277,7 @@
             marginTop: 60,
             randomness: 1,
             showRedLine: true,
+            strikethrough: false,
             seed: Math.random()
         };
 
@@ -284,6 +298,7 @@
         const inputMarginTop = document.getElementById('input-margin-top');
         const inputRandomness = document.getElementById('input-randomness');
         const toggleRedLine = document.getElementById('toggle-red-line');
+        const toggleStrikethrough = document.getElementById('toggle-strikethrough');
 
         // Value Display Labels
         const valFontSize = document.getElementById('val-font-size');
@@ -369,7 +384,7 @@
             }
         }
 
-        // Render Handwritten Text onto Canvas with jitter
+        // Render Handwritten Text onto Canvas with jitter & optional strikethrough (sret)
         function drawCanvasText() {
             const selectedFont = FONTS.find(f => f.id === state.font) || FONTS[0];
             ctx.font = `${state.fontSize}px ${selectedFont.family}`;
@@ -387,6 +402,13 @@
                 }
 
                 let currentX = state.marginLeft;
+                let lineStartX = currentX;
+                let lineWidth = 0;
+
+                // Pre-calculate line width for strikethrough
+                for (let i = 0; i < line.length; i++) {
+                    lineWidth += ctx.measureText(line[i]).width;
+                }
 
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
@@ -418,6 +440,21 @@
                     ctx.restore();
 
                     currentX += charWidth + offsetX;
+                }
+
+                // Draw Strikethrough (Sret) if enabled
+                if (state.strikethrough) {
+                    ctx.save();
+                    ctx.strokeStyle = state.ink;
+                    ctx.lineWidth = 1.8;
+                    const strikeY = currentY - (state.fontSize * 0.35);
+                    const angleOffset = (pseudoRandom(localSeed++) - 0.5) * 4;
+
+                    ctx.beginPath();
+                    ctx.moveTo(lineStartX - 5, strikeY);
+                    ctx.lineTo(currentX + 5, strikeY + angleOffset);
+                    ctx.stroke();
+                    ctx.restore();
                 }
 
                 currentY += state.lineHeight;
@@ -532,6 +569,11 @@
 
             toggleRedLine.addEventListener('change', (e) => {
                 state.showRedLine = e.target.checked;
+                renderFullCanvas();
+            });
+
+            toggleStrikethrough.addEventListener('change', (e) => {
+                state.strikethrough = e.target.checked;
                 renderFullCanvas();
             });
 
