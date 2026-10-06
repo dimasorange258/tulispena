@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator kontol cica</title>
+    <title>TulisTangan.id - Generator Tulisan Tangan</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Handwriting styles & UI -->
@@ -26,11 +26,34 @@
             max-width: 100%;
             height: auto;
         }
+
+        /* Splash Screen Transition */
+        #splash-screen {
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div class="text-center max-w-md space-y-6">
+            <div class="inline-flex p-4 bg-indigo-600 rounded-2xl text-white shadow-xl shadow-indigo-600/30 animate-bounce">
+                <i data-lucide="pen-tool" class="w-10 h-10"></i>
+            </div>
+            <div class="space-y-2">
+                <h1 class="text-3xl font-bold tracking-tight text-white">Generator Tulisan Tangan</h1>
+                <p class="text-sm text-slate-400">Ubah teks digital Anda menjadi lembaran tulisan tangan alami dengan mudah, cepat, dan siap cetak.</p>
+            </div>
+            <button id="btn-start" class="w-full py-3.5 px-6 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 group">
+                <span>Mulai Sekarang</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP HEADER -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="p-2 bg-indigo-600 rounded-lg text-white">
@@ -55,6 +78,7 @@
         </div>
     </header>
 
+    <!-- MAIN CONTENT -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full items-start">
             
@@ -199,16 +223,10 @@
     </main>
 
     <script>
-        // Default Sample Text matching the style of homework answer
-        const SAMPLE_TEXT = `Jawaban Manajemen Keuangan
-PT YUDI HANDSOME . Tbk
-(31 Desember 2024)
+        // Default Sample Text
+        const SAMPLE_TEXT = `aldi kocakk`;
 
-a. Rasio Likuiditas
-   1. Current ratio = Aset Lancar / Kewajiban Lancar
-                   = 8.000 / 5.000`;
-
-        // Available Handwriting Fonts (Including print handwriting matching the photo)
+        // Available Handwriting Fonts
         const FONTS = [
             { id: 'Patrick Hand', name: 'Patrick (Cetak Rapi)', family: "'Patrick Hand', cursive" },
             { id: 'Gaegu', name: 'Gaegu (Cetak Bersih)', family: "Gaegu, cursive" },
@@ -244,7 +262,7 @@ a. Rasio Likuiditas
             lineHeight: 38,
             marginLeft: 70,
             marginTop: 60,
-            randomness: 1, // 0: None, 1: Low, 2: Medium, 3: High
+            randomness: 1,
             showRedLine: true,
             seed: Math.random()
         };
@@ -257,6 +275,7 @@ a. Rasio Likuiditas
         const paperOptionsContainer = document.getElementById('paper-options');
         const canvas = document.getElementById('handwriting-canvas');
         const ctx = canvas.getContext('2d');
+        const splashScreen = document.getElementById('splash-screen');
 
         // Input Controls
         const inputFontSize = document.getElementById('input-font-size');
@@ -279,12 +298,11 @@ a. Rasio Likuiditas
             return x - Math.floor(x);
         }
 
-        // Render Canvas Background Lines directly into Canvas
+        // Render Canvas Background Lines directly into Canvas (Garis Buku Warna Hitam)
         function drawCanvasBackground() {
             const width = canvas.width;
             const height = canvas.height;
 
-            // 1. Base Fill Color
             if (state.paper === 'vintage') {
                 ctx.fillStyle = '#f4ecd8';
             } else if (state.paper === 'lined') {
@@ -294,7 +312,6 @@ a. Rasio Likuiditas
             }
             ctx.fillRect(0, 0, width, height);
 
-            // 2. Vintage Texture Effect
             if (state.paper === 'vintage') {
                 ctx.fillStyle = 'rgba(180, 150, 100, 0.05)';
                 for (let i = 0; i < 400; i++) {
@@ -305,9 +322,9 @@ a. Rasio Likuiditas
                 }
             }
 
-            // 3. Horizontal Lines for Lined Paper
+            // Horizontal Lines (Hitam untuk Buku Bergaris)
             if (state.paper === 'lined') {
-                ctx.strokeStyle = '#a8c5da';
+                ctx.strokeStyle = '#2b2b2b';
                 ctx.lineWidth = 1;
                 
                 let y = state.marginTop;
@@ -320,10 +337,10 @@ a. Rasio Likuiditas
                 }
             }
 
-            // 4. Grid Pattern for Box/Grid Paper
+            // Grid Pattern
             if (state.paper === 'grid') {
-                ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#2b2b2b';
+                ctx.lineWidth = 0.8;
                 const gridSize = 28;
 
                 for (let x = 0; x < width; x += gridSize) {
@@ -340,7 +357,7 @@ a. Rasio Likuiditas
                 }
             }
 
-            // 5. Vertical Red Margin Line for Notebooks
+            // Vertical Red Margin Line
             if (state.paper === 'lined' && state.showRedLine) {
                 const redX = Math.max(state.marginLeft - 20, 20);
                 ctx.strokeStyle = '#f87171';
@@ -373,7 +390,6 @@ a. Rasio Likuiditas
 
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
-
                     const charWidth = ctx.measureText(char).width;
 
                     if (currentX + charWidth > canvas.width - 30) {
@@ -446,6 +462,13 @@ a. Rasio Likuiditas
         }
 
         function setupEventListeners() {
+            // Splash Button Start
+            document.getElementById('btn-start').addEventListener('click', () => {
+                splashScreen.style.opacity = '0';
+                splashScreen.style.visibility = 'hidden';
+                renderFullCanvas();
+            });
+
             textInput.addEventListener('input', (e) => {
                 state.text = e.target.value;
                 updateCharCount();
